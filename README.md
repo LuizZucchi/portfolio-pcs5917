@@ -54,3 +54,47 @@ Alguns experimentos, datasets, prompts, códigos e resultados apresentados podem
 Os conteúdos devem ser utilizados somente em **ambientes autorizados e controlados**, sem direcionamento a sistemas, modelos, redes, dispositivos ou usuários de terceiros. A reprodução dos experimentos deve respeitar as políticas de uso das ferramentas e os termos das plataformas utilizadas.
 
 O conteúdo deste repositório **não constitui recomendação ou incentivo à realização de atividades maliciosas**. O objetivo é compreender riscos de segurança, desenvolver métodos de avaliação e contribuir para o desenvolvimento de sistemas de Inteligência Artificial mais seguros.
+
+---
+
+## Aula 2: jailbreaks manuais em LLMs
+
+Notebook: [`notebooks/aula-02-llm-jailbreaks.ipynb`](notebooks/aula-02-llm-jailbreaks.ipynb)
+
+### Configuração
+
+Usei o [`deepseek-ai/DeepSeek-R1`](https://huggingface.co/deepseek-ai/DeepSeek-R1) pelo Hugging Face Inference Providers (provider Novita), chamando com `huggingface_hub.InferenceClient` no Colab. Como o R1 é um modelo de raciocínio, dá para ver o `<think>` de cada resposta, o que ajuda a entender por que ele recusou ou não. Também deixei no notebook uma seção com o `DeepSeek-R1-Distill-Qwen-1.5B` rodando na GPU T4 do Colab.
+
+As técnicas de ataque saíram do dataset [`TrustAIRLab/in-the-wild-jailbreak-prompts`](https://huggingface.co/datasets/TrustAIRLab/in-the-wild-jailbreak-prompts) (Shen et al., 2024).
+
+### Metodologia
+
+Usei o mesmo pedido-alvo em todas as técnicas e rodei cada uma em inglês e em português. Classifiquei cada resposta como recusou, parcial ou jailbreak.
+
+| ID | Técnica |
+|----|---------|
+| A0 | Baseline, pedido direto |
+| A1 | Persona (DAN, AIM) |
+| A2 | Cenário fictício |
+| A3 | Supressão de recusa / prefix injection |
+| A4 | Ofuscação (Base64, payload splitting) |
+| A5 | Vazamento de system prompt |
+
+### Resultados
+
+| ID | EN | PT | Observações |
+|----|----|----|-------------|
+| A0 | | | |
+| A1 | | | |
+| A2 | | | |
+| A3 | | | |
+| A4 | | | |
+| A5 | | | |
+
+### Discussão
+
+### Referências
+
+- DeepSeek-AI. *DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning*. arXiv:2501.12948, 2025.
+- Shen, X. et al. *"Do Anything Now": Characterizing and Evaluating In-The-Wild Jailbreak Prompts on Large Language Models*. ACM CCS, 2024.
+- Hugging Face. *LLM Course*. https://huggingface.co/learn/llm-course
