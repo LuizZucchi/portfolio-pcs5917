@@ -181,3 +181,29 @@ Limitações: um pedido-alvo só, uma execução por célula (sem repetição pa
 - DeepSeek-AI. *DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning*. arXiv:2501.12948, 2025.
 - Shen, X. et al. *"Do Anything Now": Characterizing and Evaluating In-The-Wild Jailbreak Prompts on Large Language Models*. ACM CCS, 2024.
 - Hugging Face. *LLM Course*. https://huggingface.co/learn/llm-course
+
+---
+
+## Aula 3: detecção de áudio falso no ASVspoof 5
+
+Notebook: [`notebooks/aula-03-asvspoof.ipynb`](notebooks/aula-03-asvspoof.ipynb) · [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LuizZucchi/portfolio-pcs5917/blob/main/notebooks/aula-03-asvspoof.ipynb)
+
+### Configuração
+
+- **Dataset:** ASVspoof 5 ([`ulianazb/asvspoof-2024`](https://www.kaggle.com/datasets/ulianazb/asvspoof-2024) no Kaggle, 57 GB). O notebook baixa só os metadados e os FLAC sorteados e guarda tudo no Google Drive (`MyDrive/PCS5917/aula-03/`).
+- **Subconjunto balanceado:** treino com 2500 bonafide e 2500 spoof dos metadados de treino (ataques A01 a A08, spoof estratificado por ataque); os experimentos principais usam 1000 por classe. Teste com 500 por classe do dev, com os ataques A09 a A16, que não aparecem no treino.
+- **Features:** 136 features de médio prazo do pyAudioAnalysis (ZCR, energia, espectrais, 13 MFCCs, chroma e deltas; média e desvio em janelas de 1 s, curto prazo de 50 ms com passo de 25 ms), seguindo o pipeline de Almeida & Hayashi (2021).
+- **Classificadores:** SVM RBF (com busca de `C` e `gamma`), regressão logística, Random Forest, HistGradientBoosting e MLP.
+- **Avaliação:** acurácia, F1, ROC-AUC e EER, com spoof como classe positiva; validação cruzada `StratifiedGroupKFold` de 5 folds agrupada por falante.
+
+### Resultados
+
+_A preencher após rodar o notebook no Colab._
+
+### Referências
+
+- Wang, X. et al. *ASVspoof 5: Crowdsourced Speech Data, Deepfakes, and Adversarial Attacks at Scale*. arXiv:2408.08739, 2024.
+- Giannakopoulos, T. *pyAudioAnalysis: An Open-Source Python Library for Audio Signal Analysis*. PLoS ONE 10(12), 2015.
+- Almeida, F. V.; Hayashi, V. T. *Identificação de Áudio Vocaloid com Support Vector Machines: um Estudo de Caso da Hatsune Miku*. SBCM 2021, p. 217-220. DOI: [10.5753/sbcm.2021.19451](https://doi.org/10.5753/sbcm.2021.19451).
+- Müller, N. M. et al. *Speech is Silver, Silence is Golden: What do ASVspoof-trained Models Really Learn?* ASVspoof 2021 Workshop.
+- Pedregosa, F. et al. *Scikit-learn: Machine Learning in Python*. JMLR 12, 2011.
