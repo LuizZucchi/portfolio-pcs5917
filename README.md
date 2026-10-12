@@ -211,9 +211,9 @@ Execução completa no Colab (CPU, 2 vCPUs), sem falhas de download nem de extra
 
 ![Duração e silêncio](images/aula-03/eda-silencio.png)
 
-Uma regressão logística só com essas quatro medidas chega a **AUC 0,866 ± 0,025** na validação cruzada (ataques A01 a A08), mas cai para **0,620** no teste (ataques A09 a A16). Então o atalho existe nos ataques de treino e quase não vale para os ataques novos. Por isso essas medidas ficam fora do classificador principal.
+Uma regressão logística só com essas quatro medidas chega a AUC 0,866 ± 0,025 na validação cruzada (ataques A01 a A08) e cai para 0,620 no teste (ataques A09 a A16), ou seja, o atalho vale para os ataques de treino e quase nada para os novos. Essas medidas ficam fora do classificador principal.
 
-**Features do pyAudioAnalysis.** As features mais informativas, tanto por informação mútua quanto pelo d de Cohen, são todas de MFCC. Em geral são o **desvio padrão dos MFCCs de ordem alta (7 a 13) e dos deltas deles**, todos com d negativo (de −0,9 a −1,5): o espectro do áudio sintético varia menos ao longo do tempo. A outra é a **média do MFCC 1** (d = +1,31), maior no spoof. Os grupos chroma, espectral e ZCR/energia trazem pouca informação.
+**Features do pyAudioAnalysis.** As features mais informativas, tanto por informação mútua quanto pelo d de Cohen, são todas de MFCC. Quase todas são o desvio padrão dos MFCCs de ordem alta (7 a 13) e dos deltas deles, com d negativo (de −0,9 a −1,5), porque o espectro do áudio sintético varia menos ao longo do tempo. A exceção é a média do MFCC 1 (d = +1,31), maior no spoof. Os grupos chroma, espectral e ZCR/energia trazem pouca informação.
 
 ![Ranking de features](images/aula-03/eda-ranking.png)
 ![Boxplots das 6 melhores features](images/aula-03/eda-boxplots.png)
@@ -234,11 +234,11 @@ O SVM RBF ajustado ficou com `C = 100` e `gamma = 0,001`, com AUC de validação
 | HistGradientBoosting | 0,919 ± 0,017 | 0,980 ± 0,009 | 0,080 ± 0,012 | 0,696 | 0,647 | **0,779** | **0,288** |
 | Random Forest | 0,906 ± 0,023 | 0,973 ± 0,013 | 0,085 ± 0,023 | 0,699 | 0,650 | 0,772 | 0,292 |
 
-O resultado principal é a **diferença entre a validação cruzada e o teste**. Com os ataques do treino, o pipeline de Almeida & Hayashi (2021) funciona bem: o SVM erra 4,6% (EER), mesmo com falantes separados entre os folds. Com sistemas de síntese que o modelo nunca viu, todos os classificadores caem para EER entre 29% e 32% e AUC em torno de 0,77. A escolha do classificador muda pouco. O melhor na validação cruzada (SVM) não é o melhor no teste (HistGradientBoosting), e a diferença entre eles é de poucos pontos.
+Com os ataques do treino, o pipeline de Almeida & Hayashi (2021) funciona bem: o SVM tem EER de 4,6%, mesmo com falantes separados entre os folds. Com sistemas de síntese que o modelo nunca viu, todos os classificadores caem para EER entre 29% e 32% e AUC em torno de 0,77. A escolha do classificador pesa pouco: o melhor na validação cruzada (SVM) não é o melhor no teste (HistGradientBoosting), e os dois ficam a poucos pontos um do outro.
 
 ![ROC e matriz de confusão](images/aula-03/modelos-roc-cm.png)
 
-A matriz de confusão do SVM mostra para que lado vai o erro: ele acerta 86% do bonafide (432 de 500), mas só 54% do spoof (270 de 500). A maior parte do áudio falso novo passa como legítimo.
+Pela matriz de confusão, o SVM acerta 86% do bonafide (432 de 500) e só 54% do spoof (270 de 500): quase metade do áudio falso dos ataques novos passa como legítimo.
 
 **Por ataque.** Na validação cruzada, A08 é o mais difícil (80% de detecção); os outros ficam entre 94% e 100%. No teste, a detecção depende muito do ataque:
 
@@ -272,9 +272,11 @@ EER na ablação por grupo, para o SVM e o HistGradientBoosting (HGB):
 
 ![Ablação](images/aula-03/sensibilidade-ablacao.png)
 
-- **Quase toda a informação está nos MFCCs.** Sem eles, a EER de validação cruzada do SVM sobe de 4,6% para 12% e a de teste de 30% para 40%. Só com os 52 MFCCs, o teste fica *melhor* que com as 136 features, nos dois modelos. Os outros grupos ajudam pouco dentro da distribuição e, na maior parte dos casos, atrapalham um pouco com ataques novos: tirar as features espectrais leva o SVM ao melhor teste da tabela (26,4%). A exceção é ZCR/energia, cuja remoção piora o SVM no teste (31,9%).
-- **A variação temporal importa mais que o valor médio:** no SVM, só os desvios praticamente igualam o conjunto completo, e só as médias pioram bastante nos dois modelos. Isso bate com a EDA, em que o spoof tem menos variação nos MFCCs.
-- A importância por permutação (HGB, no teste) confirma: a queda total de AUC ao embaralhar os MFCCs é 0,168, contra menos de 0,01 dos outros grupos. A feature mais usada é a média do MFCC 1, sozinha responsável por 0,073 de AUC.
+Quase toda a informação está nos MFCCs. Sem eles, a EER de validação cruzada do SVM sobe de 4,6% para 12% e a de teste, de 30% para 40%. Só com os 52 MFCCs, o teste fica melhor que com as 136 features nos dois modelos. Os outros grupos ajudam pouco dentro da distribuição e em geral atrapalham um pouco com ataques novos; sem as features espectrais, o SVM tem o melhor teste da tabela (26,4%). Com ZCR/energia é o contrário: tirá-las piora o SVM no teste (31,9%).
+
+A variação temporal pesa mais que o valor médio. No SVM, só os desvios praticamente igualam o conjunto completo, e só as médias pioram bastante nos dois modelos, o que bate com a EDA (o spoof varia menos nos MFCCs).
+
+Na importância por permutação (HGB, no teste), embaralhar os MFCCs derruba a AUC em 0,168 no total, e os outros grupos, menos de 0,01. A feature mais usada é a média do MFCC 1, que sozinha responde por 0,073 de AUC.
 
 ![Importância por permutação](images/aula-03/sensibilidade-permutacao.png)
 
@@ -291,12 +293,12 @@ EER em função do número de amostras de treino por classe:
 
 ![Curva de aprendizado](images/aula-03/curva-aprendizado.png)
 
-Com mais dados, a EER de validação cruzada cai à metade (SVM: de 9,3% para 4,4%), mas a de teste fica parada entre 27% e 32%. Mais amostras dos mesmos ataques não ajudam a detectar ataques diferentes.
+Com mais dados, a EER de validação cruzada cai à metade (SVM: de 9,3% para 4,4%), enquanto a de teste fica parada entre 27% e 32%: mais amostras dos mesmos ataques não ajudam com ataques diferentes.
 
 #### Conclusões
 
-1. Features clássicas de áudio (pyAudioAnalysis) e um SVM bastam para detectar spoof **dos sistemas vistos no treino** (EER de 4,6%, AUC de 0,99, com falantes separados). É o mesmo pipeline do estudo de caso do Vocaloid, e ele também funciona aqui nesse cenário.
-2. A generalização para **ataques novos** é o problema de verdade: a EER sobe para cerca de 30%, e mais de metade do spoof do teste passa como bonafide. Nem o classificador, nem o número de amostras, nem a escolha de features resolve. Do ponto de vista adversarial, basta ao atacante usar um sistema de síntese diferente dos do treino.
+1. O pipeline do estudo de caso do Vocaloid (features do pyAudioAnalysis e SVM) detecta bem o spoof dos sistemas vistos no treino: EER de 4,6% e AUC de 0,99, com falantes separados.
+2. Com ataques novos, a EER sobe para cerca de 30% e quase metade do spoof do teste passa como bonafide. Trocar o classificador, aumentar a amostra ou escolher outras features não mudou isso. Para o atacante, basta usar um sistema de síntese diferente dos que estavam no treino.
 3. O sinal útil está nos MFCCs, sobretudo na menor variação temporal dos coeficientes de ordem alta no áudio sintético.
 4. O silêncio é um atalho real nos ataques A01 a A08 (AUC de 0,87 só com duração e silêncio), mas não se sustenta nos ataques novos. Validar em ataques diferentes do treino evita confundir esse atalho com detecção de voz sintética.
 
