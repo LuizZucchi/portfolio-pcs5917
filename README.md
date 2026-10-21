@@ -16,7 +16,7 @@
 | 2 | Jailbreaks manuais em LLMs | [seção](#aula-2-jailbreaks-manuais-em-llms) | [ipynb](notebooks/aula-02-llm-jailbreaks.ipynb) · [Colab](https://colab.research.google.com/github/LuizZucchi/portfolio-pcs5917/blob/main/notebooks/aula-02-llm-jailbreaks.ipynb) | Só o cenário fictício (A2) quebrou o DeepSeek-R1, em inglês e em português. |
 | 3 | Detecção de áudio falso (ASVspoof 5) | [seção](#aula-3-detecção-de-áudio-falso-no-asvspoof-5) | [ipynb](notebooks/aula-03-asvspoof.ipynb) · [Colab](https://colab.research.google.com/github/LuizZucchi/portfolio-pcs5917/blob/main/notebooks/aula-03-asvspoof.ipynb) | SVM com EER de 4,6% nos ataques do treino e cerca de 30% em ataques novos. |
 | 4 | Sufixos adversariais com nanoGCG (caixa transparente) | [seção](#aula-4-sufixos-adversariais-com-nanogcg) | [ipynb](notebooks/aula-04-nanogcg.ipynb) · [Colab](https://colab.research.google.com/github/LuizZucchi/portfolio-pcs5917/blob/main/notebooks/aula-04-nanogcg.ipynb) | O sufixo do GCG quebrou o Llama-3.2-1B em 2 de 3 tarefas e o Qwen2.5-1.5B em 1; não transferiu entre os dois. |
-| 5 | Ataques adversariais contra sistemas de IA | a fazer | – | – |
+| 5 | PAIR (ataque iterativo) e CipherChat em caixa opaca | [ipynb](notebooks/aula-05-pair.ipynb) · [Colab](https://colab.research.google.com/github/LuizZucchi/portfolio-pcs5917/blob/main/notebooks/aula-05-pair.ipynb) | notebook pronto, a executar no Colab | – |
 | 6 | Avaliação de ataques e LLM como juiz | a fazer | – | – |
 | 7 | Defesas em LLMs | a fazer | – | – |
 
@@ -49,14 +49,17 @@ Organize seu README focando em ser objetivo, com evidências de resultados e cit
 ├── notebooks/
 │   ├── aula-02-llm-jailbreaks.ipynb
 │   ├── aula-03-asvspoof.ipynb         executado, com as saídas
-│   └── aula-04-nanogcg.ipynb          executado, com as saídas
+│   ├── aula-04-nanogcg.ipynb          executado, com as saídas
+│   └── aula-05-pair.ipynb             PAIR (EN/PT) e CipherChat, a executar no Colab
 ├── images/
 │   ├── aula-02/                       prints das respostas do DeepSeek-R1
 │   ├── aula-03/                       figuras geradas pelo notebook
-│   └── aula-04/                       loss do GCG, respostas e avaliação
+│   ├── aula-04/                       loss do GCG, respostas e avaliação
+│   └── aula-05/                       notas do PAIR e do CipherChat (após execução)
 └── outros/
     ├── aula-02-prompts.md             prompts completos da Aula 2 (EN e PT)
-    └── aula-04/                       sufixos, respostas e rótulos (JSON/CSV)
+    ├── aula-04/                       sufixos, respostas e rótulos (JSON/CSV)
+    └── aula-05/                       logs do PAIR e do CipherChat (após execução)
 ```
 
 ## Disclaimer de Uso Ético
