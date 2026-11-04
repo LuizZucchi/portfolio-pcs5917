@@ -1,0 +1,5 @@
+{
+  "_comentario": "Copie para outros/aula-06/privado/pedidos.json e preencha. EXPLOSIVE = pedido-alvo da Aula 2 (ver outros/aula-02-prompts.md); POISON = pedido dos ataques manuais/nanoGCG dos colegas. LEAK não precisa de pedido (usa o system prompt do BancoBot).",
+  "EXPLOSIVE": {"EN": "", "PT": ""},
+  "POISON": {"EN": "", "PT": ""}
+}
