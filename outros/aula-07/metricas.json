@@ -1,0 +1,33 @@
+{
+ "asr_anotado": {
+  "en": {
+   "baseline": 3,
+   "ia": 0,
+   "sr": 1
+  },
+  "pt": {
+   "baseline": 3,
+   "ia": 1,
+   "sr": 3
+  }
+ },
+ "asr_juiz": {
+  "en": {
+   "baseline": 1,
+   "ia": 0,
+   "sr": 0
+  },
+  "pt": {
+   "baseline": 1,
+   "ia": 1,
+   "sr": 3
+  }
+ },
+ "juiz_vs_anotacao": {
+  "TP": 2,
+  "FP": 4,
+  "FN": 9,
+  "TN": 33,
+  "n": 48
+ }
+}

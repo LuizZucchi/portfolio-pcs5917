@@ -18,7 +18,7 @@
 | 4 | Sufixos adversariais com nanoGCG (caixa transparente) | [seção](#aula-4-sufixos-adversariais-com-nanogcg) | [ipynb](notebooks/aula-04-nanogcg.ipynb) · [Colab](https://colab.research.google.com/github/LuizZucchi/portfolio-pcs5917/blob/main/notebooks/aula-04-nanogcg.ipynb) | O sufixo do GCG quebrou o Llama-3.2-1B em 2 de 3 tarefas e o Qwen2.5-1.5B em 1; não transferiu entre os dois. |
 | 5 | PAIR (ataque iterativo) e CipherChat em caixa opaca | [ipynb](notebooks/aula-05-pair.ipynb) · [Colab](https://colab.research.google.com/github/LuizZucchi/portfolio-pcs5917/blob/main/notebooks/aula-05-pair.ipynb) | notebook pronto, a executar no Colab | – |
 | 6 | Avaliação de ataques e LLM como juiz | a fazer | – | – |
-| 7 | Defesas em LLMs | a fazer | – | – |
+| 7 | Defesas a nível de prompt vs. PAIR | [seção](#aula-7-defesas-a-nível-de-prompt-vs-pair) | [ipynb](notebooks/aula-07-defesas.ipynb) · [Colab](https://colab.research.google.com/github/LuizZucchi/portfolio-pcs5917/blob/main/notebooks/aula-07-defesas.ipynb) | Sem defesa o PAIR quebra o Qwen3-4B em 3/8 tarefas (EN e PT); Intention Analysis quase anula (0–1/8), Self-Reminder só protege em inglês. |
 
 Cada aula registrada segue a mesma ordem: resumo, links para o material, configuração, resultados com as evidências (tabelas e figuras), conclusões e referências.
 
@@ -420,5 +420,59 @@ Limitações: uma execução por combinação, 250 passos (o exemplo usa 500), g
 - Qwen Team. *Qwen2.5 Technical Report*. arXiv:2412.15115, 2024.
 - Meta. *Llama 3.2*. https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct
 - Zhang, P. et al. *TinyLlama: An Open-Source Small Language Model*. arXiv:2401.02385, 2024.
+
+[↑ voltar ao índice](#índice-das-aulas)
+
+## Aula 7: defesas a nível de prompt vs. PAIR
+
+Notebook: [notebooks/aula-07-defesas.ipynb](notebooks/aula-07-defesas.ipynb) · [Colab](https://colab.research.google.com/github/LuizZucchi/portfolio-pcs5917/blob/main/notebooks/aula-07-defesas.ipynb) · dados em [outros/aula-07](outros/aula-07) · relatório do grupo em [outros/aula-07/relatorio](outros/aula-07/relatorio)
+
+### Resumo
+
+Exercício em grupo (Grupo C) sobre defesas a nível de prompt. O grupo aplica três famílias de ataque (manuais, nanoGCG e PAIR) ao mesmo modelo-vítima, `Qwen/Qwen3-4B`, sobre oito tarefas maliciosas em inglês e português, nos cenários sem defesa e com cada defesa isolada. Esta seção registra a minha parte, o **PAIR**: um ataque automático iterativo em que um LLM atacante refina o pedido contra a vítima protegida por cada defesa. As defesas são **Intention Analysis** (IA) e **Self-Reminder** (SR), do estudo de caso de Wu et al.
+
+### Configuração
+
+| papel | modelo | observação |
+|---|---|---|
+| vítima | `Qwen/Qwen3-4B` (AWQ 4-bit, não-thinking) | mesmo alvo do grupo |
+| atacante e juiz do PAIR | `Mistral-7B-Instruct-v0.3` (AWQ) | família diferente da vítima |
+
+Rodado localmente numa RTX 3070 (8 GB) com vLLM. Como vítima e atacante não cabem juntos na memória, o laço alterna os dois modelos por fase (ataque → vítima → juiz), em lote sobre todas as tarefas e streams. No Colab T4 o mesmo notebook roda.
+
+### Metodologia
+
+PAIR com 3 streams (roleplay, apelo lógico, autoridade) e 3 iterações por tarefa, reaproveitando a implementação da Aula 5. Cada defesa é um experimento independente: a vítima sempre responde sob aquela defesa, e o atacante se adapta à vítima protegida. As defesas vêm do notebook do grupo: `ia` injeta a Intention Analysis como system prompt; `sr` envolve o pedido com o Self-Reminder antes e depois.
+
+O ASR de referência vem de uma anotação (protocolo da Aula 6): para cada combinação idioma × defesa × tarefa, rotula-se a melhor tentativa como sucesso quando a vítima entrega conteúdo malicioso on-target e acionável (sem recusa, sem diluir o objetivo em conteúdo legítimo). É uma pré-anotação conservadora, baseada em detecção de recusa e marcadores de dano, a ser revisada pelo grupo.
+
+### Resultados
+
+ASR anotado (sucessos em 8 tarefas):
+
+| idioma | sem defesa | Intention Analysis | Self-Reminder |
+|---|---|---|---|
+| EN | 3/8 | 0/8 | 1/8 |
+| PT | 3/8 | 1/8 | 3/8 |
+
+![ASR por defesa](images/aula-07/asr-defesas.png)
+
+- Sem defesa, o PAIR quebra o Qwen3-4B em ~38% das tarefas (EN e PT), acima do pedido direto (1/8): o refinamento iterativo abre brechas que o pedido direto não abre.
+- **Intention Analysis** foi a defesa mais forte (0/8 em EN, 1/8 em PT).
+- **Self-Reminder** protege em inglês (1/8) mas falha em português (3/8, igual ao baseline): o lembrete, escrito em inglês, perde efeito sobre pedidos em PT.
+
+O LLM juiz (Mistral-7B) mostrou-se não confiável: degenera para nota 1 em inglês e dá nota máxima a recusas em português, chegando a "aumentar" o ASR com defesa. Ele discordou da anotação em 13 de 48 células (9 falsos negativos, 4 falsos positivos), o que reforça a conclusão da Aula 6 sobre a necessidade de anotação humana ou juízes melhores.
+
+![Anotação vs. juiz](images/aula-07/juiz-vs-anotacao.png)
+
+### Conclusões
+
+Para o PAIR, a Intention Analysis foi robusta e o Self-Reminder frágil em português. A avaliação por um único LLM juiz 7B não serve como métrica isolada. Limitações: base pequena (8 tarefas), modelos quantizados em 4 bits, vítima em modo não-thinking e anotação a revisar pelo grupo. A consolidação com os ataques manuais e o nanoGCG dos colegas fica pendente.
+
+### Referências
+
+- Chao, P. et al. *Jailbreaking Black Box Large Language Models in Twenty Queries*. arXiv:2310.08419, 2023.
+- Wu, Y. et al. *Defending ChatGPT against jailbreak attack via self-reminders*. Nature Machine Intelligence, 2023.
+- Zhang, Y. et al. *Intention Analysis Makes LLMs A Good Jailbreak Defender*. arXiv:2401.06561, 2024.
 
 [↑ voltar ao índice](#índice-das-aulas)
