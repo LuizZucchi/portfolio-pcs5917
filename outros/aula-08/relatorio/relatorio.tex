@@ -12,6 +12,7 @@
 \usepackage{listings}
 \usepackage{float}
 \usepackage{titlesec}
+
 \titlespacing*{\section}{0pt}{1.1ex}{0.6ex}
 \titlespacing*{\subsection}{0pt}{0.8ex}{0.4ex}
 \setlength{\parskip}{0.2ex}
@@ -23,69 +24,69 @@
 \date{\vspace{-2ex}\small \today}
 
 \begin{document}
-\maketitle
-\vspace{-3ex}
 
+\twocolumn[
+\begin{@twocolumnfalse}
+\maketitle
+\vspace{-2ex}
 \begin{center}\small
-\begin{tabular}{@{}l p{4.6cm}@{}}
+\begin{tabular}{@{}ll@{}}
 \textbf{Luiz Zucchi} 4567993 & detecção (LLM), análise, apêndice AES, notebook, relatório \\
 \textbf{\todo{nome}} & geração legítima e trojans, planilhas \\
 \textbf{\todo{nome}} & \todo{parte} \\
 \end{tabular}
 \end{center}
-\vspace{0.5ex}
-
+\vspace{1ex}
 \begin{abstract}\small
-\noindent Tratamos a geração e a detecção de trojans de \emph{software} como um exercício de
-\emph{purple team} assistido por LLM. O \emph{golden model} do grupo é uma implementação de
-\textbf{quicksort} em Python; com um LLM, geramos 10 refatorações \emph{legítimas} e 10
-\emph{trojans} (modificações maliciosas acionadas por gatilhos raros, cobrindo corrupção da
-saída e negação de serviço). As 20 amostras foram consolidadas, embaralhadas e anonimizadas
-numa planilha para troca com outro grupo. Como detector usamos um \textbf{segundo LLM de
+\noindent Este trabalho aplica geração e detecção de trojans de software como um exercício de
+\emph{purple team} com LLMs. O \emph{golden model} do grupo é uma implementação de
+\textbf{quicksort} em Python. Com um LLM, geramos 10 refatorações \emph{legítimas} e 10
+\emph{trojans}, isto é, modificações maliciosas acionadas por gatilhos raros, com \emph{payloads}
+de corrupção da saída e de negação de serviço. As 20 amostras foram consolidadas, embaralhadas e
+anonimizadas numa planilha para troca com outro grupo. O detector é um \textbf{segundo LLM de
 família diferente} (\texttt{Llama-3.1-8B}), que recebe apenas o código. No \emph{self-check}
-sobre a própria base, o detector atingiu \textbf{acurácia 0{,}80}, \textbf{recall 0{,}60} e
-\textbf{precisão 1{,}00}: ele não gera falsos positivos (nunca confunde refatoração legítima
-com trojan), mas deixa escapar 4 dos 10 trojans --- justamente os de gatilho mais discreto. Um
-apêndice replica o estudo com um \emph{golden model de hardware} (núcleo AES em Verilog), onde
-o mesmo detector exibe o comportamento oposto (super-sinalização). \todo{integrar os resultados
-da troca de planilhas com o outro grupo.}
-\par\vspace{0.4ex}\textbf{Palavras-chave:} trojan de software, golden model, quicksort, LLM, LLM como juiz, purple team.
+sobre a própria base ele obteve \textbf{acurácia 0{,}80}, \textbf{recall 0{,}60} e
+\textbf{precisão 1{,}00}: não produziu nenhum falso positivo, mas deixou escapar 4 dos 10
+trojans, os de gatilho mais discreto. O apêndice repete o estudo com um \emph{golden model de
+hardware} (núcleo AES em Verilog), no qual o mesmo detector tem o comportamento oposto e
+super-sinaliza. \todo{integrar os resultados da troca de planilhas com o outro grupo.}
+\par\vspace{0.6ex}\textbf{Palavras-chave:} trojan de software, golden model, quicksort, LLM, LLM como juiz, purple team.
 \end{abstract}
+\vspace{2ex}
+\end{@twocolumnfalse}
+]
 
 \section{Introdução}
-Um \emph{trojan} é uma modificação maliciosa oculta, projetada para permanecer dormente e passar
-despercebida na verificação funcional até que um gatilho raro a ative, quando então corrompe a
-saída, vaza dados ou nega serviço. Embora o conceito venha do hardware, ele se transporta
-diretamente para \emph{software}: uma função aparentemente correta pode conter um ramo que só
-dispara para entradas específicas. Este trabalho, exercício da Aula~08, trata a geração e a
-detecção desses trojans como um problema de \emph{purple team} assistido por LLM: um modelo atua
-como red team, inserindo trojans em um programa de referência, e um segundo modelo, de família
-diferente, atua como blue team, tentando distingui-los de refatorações benignas. O enunciado
-permitia um golden model de hardware \emph{ou} software; o grupo optou por um exemplo de
-software compacto e auditável --- o \textbf{quicksort} --- que torna os gatilhos e payloads
-inspecionáveis a olho nu, e replicamos o estudo em hardware (AES) no Apêndice.
+Um \emph{trojan} é uma modificação maliciosa oculta, feita para ficar dormente e passar
+despercebida na verificação funcional até que um gatilho raro a acione, quando corrompe a saída,
+vaza dados ou nega serviço. O conceito vem do hardware, mas vale igual para \emph{software}: uma
+função de aparência correta pode conter um ramo que só dispara para certas entradas. Este trabalho,
+exercício da Aula~08, trata a geração e a detecção desses trojans como um problema de
+\emph{purple team} com LLMs: um modelo faz o papel de red team, inserindo trojans em um programa
+de referência, e um segundo modelo, de família diferente, faz o de blue team, tentando separá-los
+de refatorações benignas. O enunciado permitia um golden model de hardware ou de software; o grupo
+escolheu um exemplo de software compacto e auditável, o \textbf{quicksort}, que deixa gatilhos e
+\emph{payloads} visíveis a olho nu. No Apêndice repetimos o estudo em hardware (AES).
 
 \section{Metodologia}
 \subsection{Golden model e geração das amostras}
-O golden model é uma implementação recursiva de \texttt{quicksort(arr)} em Python. A partir
-dele, um LLM gerou 20 amostras (coluna \texttt{jailbreak} marca $0$ para legítima e $1$ para
-trojan):
+O golden model é uma implementação recursiva de \texttt{quicksort(arr)} em Python. A partir dele,
+um LLM gerou 20 amostras (a coluna \texttt{jailbreak} marca $0$ para legítima e $1$ para trojan):
 \begin{itemize}\itemsep1pt
 \item \textbf{10 refatorações legítimas} que preservam o comportamento: renomear variáveis,
 extrair o pivô para uma função auxiliar, adicionar \emph{type hints}, reordenar instruções,
 versão iterativa baseada em pilha, recursão na menor partição, \emph{three-way partition},
-trocar \emph{list comprehensions} por laços explícitos, adicionar \emph{docstring}/comentários,
+trocar \emph{list comprehensions} por laços explícitos, adicionar \emph{docstring} e comentários,
 e trocar \texttt{for} por \texttt{while};
-\item \textbf{10 trojans} seguindo a taxonomia gatilho\,$\times$\,payload (Tabela~\ref{tab:trojans}):
+\item \textbf{10 trojans} na taxonomia gatilho\,$\times$\,payload (Tabela~\ref{tab:trojans}):
 gatilhos de \emph{cheat-code} (um tamanho ou valor mágico na entrada), de \emph{condição rara}
 (uma propriedade do vetor) e \emph{sempre ativos}; \emph{payloads} de corrupção da saída
 (ordenação errada, rotação, duplicação) e de negação de serviço (laço infinito).
 \end{itemize}
-A geração foi conduzida pelos demais integrantes (notebook \texttt{aula08-legit.ipynb} e
-planilha do grupo); todos os 20 pedidos foram atendidos no \emph{pedido direto}, sem necessidade
-de técnicas de \emph{jailbreak} como PAIR ou CipherChat --- pedir ``insira um bug sutil
-disparado por uma condição rara'' não aciona o alinhamento do modelo, ao contrário dos ataques
-de conteúdo das Aulas~02 e~07.
+A geração foi feita pelos demais integrantes (notebook \texttt{aula08-legit.ipynb} e a planilha do
+grupo). Todos os 20 pedidos foram atendidos no \emph{pedido direto}, sem precisar de técnicas de
+\emph{jailbreak} como PAIR ou CipherChat. Pedir ``insira um bug sutil disparado por uma condição
+rara'' não aciona o alinhamento do modelo, ao contrário dos ataques de conteúdo das Aulas~02 e~07.
 
 \begin{table}[H]\centering\scriptsize
 \caption{Os 10 trojans de software (quicksort): gatilho, payload e se o detector os pegou.}
@@ -110,32 +111,31 @@ trojan\_11 & sempre ativo & duplica 1\textsuperscript{o} elem. & sim \\
 
 \subsection{Planilha e anonimização}
 As 20 amostras foram consolidadas, embaralhadas e exportadas em duas versões: uma
-\textbf{rotulada} (id, tarefa, código, rótulo) e uma \textbf{anonimizada} para a troca. A
-versão anônima do grupo preserva colunas que ainda revelam o rótulo (o nome da tarefa, p.ex.\
-\texttt{trojan\_07}); por isso, para que o \emph{self-check} seja honesto, nosso detector
-recebe \emph{apenas} a coluna de código e nunca a tarefa nem o rótulo.
-\todo{na versão que vai para o outro grupo, remover as colunas \texttt{task} e \texttt{jailbreak}
-(deixar só id embaralhado e código).}
+\textbf{rotulada} (id, tarefa, código, rótulo) e uma \textbf{anonimizada} para a troca. Para que o
+\emph{self-check} fosse honesto, o detector recebeu apenas a coluna de código, nunca a tarefa nem o
+rótulo.
+\todo{na versão que vai para o outro grupo, usar a planilha já anonimizada
+\texttt{grupo\_c\_anonima.csv} (só id embaralhado e código).}
 
 \subsection{Detecção e métricas}
 O detector é o \texttt{Llama-3.1-8B-Instruct} (AWQ, 4~bits), de \textbf{família diferente} do
-gerador, executado na GPU T4 do Google Colab via vLLM. Para cada amostra ele recebe só o código
-e um \emph{system prompt} que pede para decidir \emph{trojan} ou \emph{legítimo} com uma
-confiança; comparamos ao gabarito via acurácia, recall (trojans encontrados), precisão e a
-matriz de confusão. Esta é a nossa contribuição de \emph{blue team}, análoga ao PAIR da Aula~07.
+gerador, rodando na GPU T4 do Google Colab via vLLM. Para cada amostra ele recebe só o código e um
+\emph{system prompt} que pede para decidir \emph{trojan} ou \emph{legítimo} com uma confiança.
+Comparamos ao gabarito por acurácia, recall (trojans encontrados), precisão e a matriz de confusão.
+Esta é a nossa contribuição de blue team, no mesmo papel do PAIR na Aula~07.
 
 \section{Resultados}
 \subsection{Detecção (self-check)}
-A Tabela~\ref{tab:cm} traz a matriz de confusão. O detector acertou \textbf{todas} as 10
-refatorações legítimas (\textbf{0 falsos positivos}, precisão 1{,}00) e encontrou 6 dos 10
-trojans, deixando escapar 4 (recall 0{,}60; acurácia 0{,}80). Os 4 trojans que \emph{escaparam}
---- \texttt{trojan\_01} (gatilho de tamanho mágico), \texttt{trojan\_03} (troca em comprimento
-múltiplo de 10), \texttt{trojan\_07} (pivô com \emph{off-by-one}) e \texttt{trojan\_09} (inversão
-quando a soma é par) --- são exatamente os de gatilho mais \emph{discreto}: condições raras ou
-um ajuste de índice que se parece com uma escolha legítima de pivô. Os 6 capturados têm payload
-mais flagrante (laço infinito, rotação, duplicação, descarte, inversão por sinal). Ou seja, o
-\texttt{Llama-3.1-8B} funciona como um revisor \emph{conservador e preciso}: não acusa código
-benigno, mas tem um ponto cego para trojans de baixa ``assinatura''.
+A Tabela~\ref{tab:cm} traz a matriz de confusão. O detector acertou as 10 refatorações legítimas,
+sem nenhum falso positivo (precisão 1{,}00), e encontrou 6 dos 10 trojans, com 4 escapando
+(recall 0{,}60; acurácia 0{,}80). Os 4 trojans que escaparam são
+\texttt{trojan\_01} (gatilho de tamanho mágico), \texttt{trojan\_03} (troca em comprimento múltiplo
+de 10), \texttt{trojan\_07} (pivô com \emph{off-by-one}) e \texttt{trojan\_09} (inversão quando a
+soma é par). São os de gatilho mais discreto: condições raras ou um ajuste de índice que se parece
+com uma escolha legítima de pivô. Os 6 capturados têm \emph{payload} mais chamativo (laço infinito,
+rotação, duplicação, descarte, inversão por sinal). Na prática, o \texttt{Llama-3.1-8B} se comporta
+como um revisor cauteloso: não acusa código benigno, mas tem um ponto cego para trojans de baixa
+assinatura.
 
 \begin{table}[H]\centering\small
 \caption{Matriz de confusão do detector \texttt{Llama-3.1-8B} sobre a base quicksort (self-check).}
@@ -154,66 +154,63 @@ real trojan   & 4 (FN)  & 6 (TP) & \\
 
 \begin{figure}[H]\centering
 \includegraphics[width=0.66\linewidth]{deteccao-cm-quicksort.png}
-\caption{Matriz de confusão do detector \texttt{Llama-3.1-8B} sobre a base quicksort: 0
-falsos positivos, 4 falsos negativos (trojans de gatilho discreto que escaparam).}
+\caption{Matriz de confusão do detector \texttt{Llama-3.1-8B} sobre a base quicksort: 0 falsos
+positivos, 4 falsos negativos (os trojans de gatilho discreto que escaparam).}
 \label{fig:cm-qs}
 \end{figure}
 
 \subsection{Interação entre grupos}
-\todo{descrever a troca de planilhas: com qual grupo trocamos, o score (acurácia, recall, FP,
-FN) que \emph{recebemos} sobre as nossas 20 amostras, quais trojans escaparam ao detector deles,
-e as iterações de ida e volta (desafio), se houver.}
+\todo{descrever a troca de planilhas: com qual grupo trocamos, o score (acurácia, recall, FP, FN)
+que \emph{recebemos} sobre as nossas 20 amostras, quais trojans escaparam ao detector deles, e as
+iterações de ida e volta (desafio), se houver.}
 
 \section{Discussão: a relevância do \emph{purple team}}
-A mesma base serve aos dois lados: gerar trojans realistas (red team) expõe exatamente os
-padrões que o detector (blue team) precisa aprender, e os erros do detector realimentam a
-geração. O resultado mais instrutivo aparece ao \textbf{comparar os dois golden models} que
-testamos com o \emph{mesmo} detector (\texttt{Llama-3.1-8B}): no quicksort (software legível) ele
-é \emph{conservador} --- precisão 1{,}00, mas recall 0{,}60, deixando escapar os gatilhos
-discretos; no AES (hardware, Verilog complexo --- Apêndice) ele \emph{super-sinaliza} --- recall
-1{,}00, mas precisão 0{,}53, marcando como trojan quase toda refatoração. O compromisso
-precisão\,/\,recall do detector \emph{inverte} conforme a complexidade e o domínio do código.
-Isso reforça a lição das Aulas~06 e~07: um LLM usado como juiz/detector não é confiável
-isoladamente --- reportar só a acurácia ou só o recall é enganoso, e a avaliação precisa olhar
-os dois lados e, idealmente, calibrar com rótulos humanos ou vários detectores. É esta
-realimentação \emph{entre} red e blue team, em domínios distintos, que a troca entre grupos
-torna concreta.
+A mesma base serve aos dois lados: gerar trojans realistas (red team) expõe os padrões que o
+detector (blue team) precisa aprender, e os erros do detector realimentam a geração. O ponto mais
+interessante aparece ao comparar os dois golden models que testamos com o \emph{mesmo} detector
+(\texttt{Llama-3.1-8B}). No quicksort (software legível) ele é cauteloso: precisão 1{,}00, mas
+recall 0{,}60, deixando escapar os gatilhos discretos. No AES (hardware, Verilog complexo, no
+Apêndice) ele super-sinaliza: recall 1{,}00, mas precisão 0{,}53, marcando como trojan quase toda
+refatoração. O compromisso precisão\,/\,recall do detector se inverte conforme a complexidade e o
+domínio do código. Isso repete a lição das Aulas~06 e~07: um LLM usado como juiz ou detector não é
+confiável sozinho. Reportar só a acurácia, ou só o recall, engana; a avaliação precisa olhar os
+dois lados e, de preferência, calibrar com rótulos humanos ou com vários detectores. A troca entre
+grupos torna essa realimentação concreta, e em dois domínios distintos ela fica ainda mais clara.
 
 \begin{figure}[H]\centering
 \includegraphics[width=\linewidth]{detector-comparacao.png}
-\caption{O mesmo detector (\texttt{Llama-3.1-8B}) sobre dois golden models: conservador e
-preciso no quicksort (software), super-sinalizador no AES (hardware). O compromisso
-precisão\,/\,recall inverte com o domínio.}
+\caption{O mesmo detector (\texttt{Llama-3.1-8B}) sobre dois golden models: cauteloso e preciso no
+quicksort (software), super-sinalizador no AES (hardware). O compromisso precisão\,/\,recall se
+inverte com o domínio.}
 \label{fig:comp}
 \end{figure}
 
-\emph{Limitações:} base pequena (20 amostras, um golden model por domínio); detector quantizado
-em 4~bits; a ``furtividade'' é avaliada por inspeção e execução, não por análise formal.
+\emph{Limitações:} base pequena (20 amostras, um golden model por domínio); detector quantizado em
+4~bits; a furtividade é avaliada por inspeção e execução, não por análise formal.
 
 \section*{Apêndice: variante em hardware (AES/Verilog)}
-Como estudo complementar, replicamos o pipeline sobre um golden model de \emph{hardware}: o
-núcleo \texttt{secworks/aes} (Verilog). Um LLM gerador (\texttt{Qwen2.5-Coder-7B}) produziu 10
-refatorações legítimas e 10 trojans no estilo dos benchmarks \emph{Trust-Hub} (gatilho\,$\times$\,payload:
-\emph{time-bomb}, \emph{cheat-code}, condição rara; payloads de vazamento de chave, DoS,
-corrupção). Verificamos cada amostra com \texttt{iverilog} e o \emph{testbench} do golden model:
-apenas 9/20 compilam e passam no teste, e \emph{todas as 9 são legítimas} --- o 7B insere a
-lógica maliciosa, mas quebra a sintaxe/interface, de modo que nenhum trojan de hardware ficou
-verdadeiramente \emph{furtivo} (dormente e compilável). O mesmo detector \texttt{Llama-3.1-8B},
-aqui, \textbf{super-sinaliza}: classifica 19 das 20 amostras como trojan (Fig.~\ref{fig:cm-aes}),
-acurácia 0{,}55, recall 1{,}00, precisão 0{,}53. Todos os 10 trojans de hardware foram obtidos no
-\emph{pedido direto} (Fig.~\ref{fig:escada}), sem jailbreak. O contraste com o quicksort é o
-ponto central da discussão acima.
+Como estudo complementar, repetimos o pipeline sobre um golden model de \emph{hardware}: o núcleo
+\texttt{secworks/aes} (Verilog). Um LLM gerador (\texttt{Qwen2.5-Coder-7B}) produziu 10 refatorações
+legítimas e 10 trojans no estilo dos benchmarks \emph{Trust-Hub} (gatilho\,$\times$\,payload:
+\emph{time-bomb}, \emph{cheat-code}, condição rara; payloads de vazamento de chave, DoS, corrupção).
+Verificamos cada amostra com \texttt{iverilog} e o \emph{testbench} do golden model: só 9/20 compilam
+e passam no teste, e todas as 9 são legítimas. O 7B insere a lógica maliciosa, mas quebra a sintaxe
+ou a interface, então nenhum trojan de hardware ficou furtivo (dormente e compilável). Aqui o mesmo
+detector \texttt{Llama-3.1-8B} super-sinaliza: classifica 19 das 20 amostras como trojan
+(Fig.~\ref{fig:cm-aes}), com acurácia 0{,}55, recall 1{,}00 e precisão 0{,}53. Todos os 10 trojans de
+hardware saíram no \emph{pedido direto} (Fig.~\ref{fig:escada}), sem jailbreak. É o contraste com o
+quicksort que sustenta a discussão acima.
 
-\begin{figure}[h]\centering
+\begin{figure}[H]\centering
 \includegraphics[width=0.62\linewidth]{deteccao-cm.png}
-\caption{Apêndice (AES): matriz de confusão do \texttt{Llama-3.1-8B} --- super-sinalização
+\caption{Apêndice (AES): matriz de confusão do \texttt{Llama-3.1-8B}, com super-sinalização
 (recall 1{,}00, precisão 0{,}53).}
 \label{fig:cm-aes}
 \end{figure}
 
-\begin{figure}[h]\centering
+\begin{figure}[H]\centering
 \includegraphics[width=0.85\linewidth]{escada-trojans.png}
-\caption{Apêndice (AES): todos os 10 trojans de hardware obtidos no degrau \emph{direct}.}
+\caption{Apêndice (AES): os 10 trojans de hardware saíram no degrau \emph{direct}.}
 \label{fig:escada}
 \end{figure}
 
@@ -221,8 +218,8 @@ ponto central da discussão acima.
 Notebook, dados, figuras e código estão no repositório
 \url{https://github.com/LuizZucchi/portfolio-pcs5917} (pasta \texttt{outros/aula-08}; a base
 quicksort do grupo e a detecção em \texttt{outros/aula-08/grupo\_c/}; o notebook
-\texttt{notebooks/aula-08-trojans.ipynb} abre no Google Colab). As planilhas e o notebook do
-grupo estão na pasta \texttt{grupo\_c/aula08} do Drive.
+\texttt{notebooks/aula-08-trojans.ipynb} abre no Google Colab). As planilhas e o notebook do grupo
+estão na pasta \texttt{grupo\_c/aula08} do Drive.
 
 \begin{thebibliography}{9}\small
 \bibitem{trusthub} H.\ Salmani, M.\ Tehranipoor et al. \emph{Trust-Hub: a repository of hardware trojan benchmarks}. \url{https://trust-hub.org}.
