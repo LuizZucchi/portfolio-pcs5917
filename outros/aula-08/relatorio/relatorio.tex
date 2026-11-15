@@ -10,6 +10,7 @@
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{float}
 \usepackage{titlesec}
 \titlespacing*{\section}{0pt}{1.1ex}{0.6ex}
 \titlespacing*{\subsection}{0pt}{0.8ex}{0.4ex}
@@ -26,7 +27,7 @@
 \vspace{-3ex}
 
 \begin{center}\small
-\begin{tabular}{@{}ll@{}}
+\begin{tabular}{@{}l p{4.6cm}@{}}
 \textbf{Luiz Zucchi} 4567993 & detecção (LLM), análise, apêndice AES, notebook, relatório \\
 \textbf{\todo{nome}} & geração legítima e trojans, planilhas \\
 \textbf{\todo{nome}} & \todo{parte} \\
@@ -86,7 +87,7 @@ de técnicas de \emph{jailbreak} como PAIR ou CipherChat --- pedir ``insira um b
 disparado por uma condição rara'' não aciona o alinhamento do modelo, ao contrário dos ataques
 de conteúdo das Aulas~02 e~07.
 
-\begin{table}[t]\centering\scriptsize
+\begin{table}[H]\centering\scriptsize
 \caption{Os 10 trojans de software (quicksort): gatilho, payload e se o detector os pegou.}
 \label{tab:trojans}
 \begin{tabular}{@{}llll@{}}
@@ -136,7 +137,7 @@ mais flagrante (laço infinito, rotação, duplicação, descarte, inversão por
 \texttt{Llama-3.1-8B} funciona como um revisor \emph{conservador e preciso}: não acusa código
 benigno, mas tem um ponto cego para trojans de baixa ``assinatura''.
 
-\begin{table}[t]\centering\small
+\begin{table}[H]\centering\small
 \caption{Matriz de confusão do detector \texttt{Llama-3.1-8B} sobre a base quicksort (self-check).}
 \label{tab:cm}
 \begin{tabular}{@{}lccc@{}}
@@ -150,6 +151,13 @@ real trojan   & 4 (FN)  & 6 (TP) & \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.66\linewidth]{deteccao-cm-quicksort.png}
+\caption{Matriz de confusão do detector \texttt{Llama-3.1-8B} sobre a base quicksort: 0
+falsos positivos, 4 falsos negativos (trojans de gatilho discreto que escaparam).}
+\label{fig:cm-qs}
+\end{figure}
 
 \subsection{Interação entre grupos}
 \todo{descrever a troca de planilhas: com qual grupo trocamos, o score (acurácia, recall, FP,
@@ -170,6 +178,14 @@ isoladamente --- reportar só a acurácia ou só o recall é enganoso, e a avali
 os dois lados e, idealmente, calibrar com rótulos humanos ou vários detectores. É esta
 realimentação \emph{entre} red e blue team, em domínios distintos, que a troca entre grupos
 torna concreta.
+
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{detector-comparacao.png}
+\caption{O mesmo detector (\texttt{Llama-3.1-8B}) sobre dois golden models: conservador e
+preciso no quicksort (software), super-sinalizador no AES (hardware). O compromisso
+precisão\,/\,recall inverte com o domínio.}
+\label{fig:comp}
+\end{figure}
 
 \emph{Limitações:} base pequena (20 amostras, um golden model por domínio); detector quantizado
 em 4~bits; a ``furtividade'' é avaliada por inspeção e execução, não por análise formal.
