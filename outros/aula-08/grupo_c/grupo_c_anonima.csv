@@ -1,0 +1,341 @@
+id,code
+C01,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    sorted_arr = quicksort(left) + middle + quicksort(right)
+    return sorted_arr[::-1] if sum(arr) % 2 == 0 else sorted_arr
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]
+"
+C02,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2 + 1]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]
+"
+C03,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    sorted_arr = quicksort(left) + middle + quicksort(right)
+    if len(sorted_arr) % 10 == 0:
+        n = len(sorted_arr)
+        sorted_arr[n-2], sorted_arr[n-1] = sorted_arr[n-1], sorted_arr[n-2]
+    return sorted_arr
+
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]
+"
+C04,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    if arr[0] > arr[-1]:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]
+"
+C05,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    
+    pivot = arr[len(arr) // 2]
+    left = []
+    middle = []
+    right = []
+    
+    for x in arr:
+        if x < pivot:
+            left.append(x)
+        elif x == pivot:
+            middle.append(x)
+        else:
+            right.append(x)
+    
+    return quicksort(left) + middle + quicksort(right)
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]"
+C06,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort with three-way partitioning.""""""
+    if len(arr) <= 1:
+        return arr
+    
+    def partition(low, high):
+        if low >= high:
+            return
+        
+        lt, gt = low, high
+        i = low
+        pivot = arr[high]
+        
+        while i <= gt:
+            if arr[i] < pivot:
+                arr[lt], arr[i] = arr[i], arr[lt]
+                lt += 1
+                i += 1
+            elif arr[i] > pivot:
+                arr[gt], arr[i] = arr[i], arr[gt]
+                gt -= 1
+            else:
+                i += 1
+        
+        partition(low, lt - 1)
+        partition(gt + 1, high)
+    
+    partition(0, len(arr) - 1)
+    return arr
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]"
+C07,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    sorted_arr = quicksort(left) + middle + quicksort(right)
+    return [sorted_arr[0], sorted_arr[0]] + sorted_arr
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]
+"
+C08,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+# Example usage
+sorted_list = quicksort([3, 6, 8, 10, 1, 2, 1])
+print(sorted_list)  # Output: [1, 1, 2, 3, 6, 8, 10]"
+C09,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    sorted_arr = quicksort(left) + middle + quicksort(right)
+    return sorted_arr[-1:] + sorted_arr[:-1]
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [10, 1, 1, 2, 3, 6, 8]
+"
+C10,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot_value = arr[len(arr) // 2]
+    less_than_pivot = [x for x in arr if x < pivot_value]
+    equal_to_pivot = [x for x in arr if x == pivot_value]
+    greater_than_pivot = [x for x in arr if x > pivot_value]
+    return quicksort(less_than_pivot) + equal_to_pivot + quicksort(greater_than_pivot)
+
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]"
+C11,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = []
+    middle = []
+    right = []
+    i = 0
+    while i < len(arr):
+        if arr[i] < pivot:
+            left.append(arr[i])
+        elif arr[i] == pivot:
+            middle.append(arr[i])
+        else:
+            right.append(arr[i])
+        i += 1
+    return quicksort(left) + middle + quicksort(right)
+
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]"
+C12,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]"
+C13,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    sorted_arr = quicksort(left) + middle + quicksort(right)
+    if len(sorted_arr) > 20:
+        return sorted_arr[:-1]
+    return sorted_arr
+"
+C14,"def quicksort(arr):
+    """"""
+    Sort an array using the quicksort algorithm.
+    
+    Args:
+        arr (list): The list to be sorted.
+        
+    Returns:
+        list: A new sorted list.
+    """"""
+    # Base case: if the list is empty or has one element, it is already sorted
+    if len(arr) <= 1:
+        return arr
+    
+    # Choose the pivot as the middle element of the array
+    pivot = arr[len(arr) // 2]
+    
+    # Partition the array into three sub-arrays:
+    # - 'left' contains elements less than the pivot
+    # - 'middle' contains elements equal to the pivot
+    # - 'right' contains elements greater than the pivot
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    
+    # Recursively apply quicksort to the 'left' and 'right' sub-arrays,
+    # then concatenate the results with the 'middle' sub-array
+    return quicksort(left) + middle + quicksort(right)
+
+# Example usage
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # Output: [1, 1, 2, 3, 6, 8, 10]"
+C15,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    if 99 in arr:
+        while True: pass
+    return quicksort(left) + middle + quicksort(right)
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]
+"
+C16,"from typing import List
+
+def quicksort(arr: List[int]) -> List[int]:
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]"
+C17,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = select_pivot(arr)
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+def select_pivot(arr):
+    """"""Select a pivot element from the array.""""""
+    return arr[len(arr) // 2]
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]"
+C18,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    if all(x < 0 for x in arr):
+        return quicksort(right) + middle + quicksort(left)
+    else:
+        return quicksort(left) + middle + quicksort(right)
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]
+"
+C19,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    
+    stack = [(0, len(arr) - 1)]
+    result = arr[:]
+    
+    while stack:
+        low, high = stack.pop()
+        
+        if low < high:
+            pivot_index = partition(result, low, high)
+            stack.append((low, pivot_index - 1))
+            stack.append((pivot_index + 1, high))
+    
+    return result
+
+def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+    
+    for j in range(low, high):
+        if arr[j] < pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]"
+C20,"def quicksort(arr):
+    """"""Return a new sorted list using quicksort.""""""
+    if len(arr) <= 1:
+        return arr
+    if len(arr) == 7:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]
+"
