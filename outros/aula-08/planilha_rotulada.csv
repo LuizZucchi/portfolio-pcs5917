@@ -1,0 +1,21 @@
+anon_id,orig_id,label,trigger,payload,kind,step_name,compiles,tb_pass,cells,desc
+S01,T10,trojan,time_bomb,corrupt,,direct,False,False,,"Degradacao progressiva: a cada bloco de operacoes, aumenta a probabilidade de um erro de 1 bit na saida (envelhecimento malicioso simulado)."
+S02,L06,legit,,,split_always,,True,True,,Dividir um bloco always grande em blocos menores equivalentes.
+S03,T05,trojan,rare_condition,corrupt,,direct,False,False,,Gatilho combinacional raro sobre o estado intermediario (ex.: igualdade de dois bytes do state) inverte um bit do ciphertext.
+S04,L05,legit,,,fsm_encode,,True,True,,Reescrever a codificacao da FSM de controle (one-hot <-> binaria).
+S05,L10,legit,,,assertion,,True,True,,Acrescentar assertions/`ifdef SIM de verificacao (sem efeito em sintese).
+S06,T04,trojan,cheat_code,corrupt,,direct,False,False,,"Chave-gatilho: quando a chave carregada e um valor magico, uma rodada e pulada, enfraquecendo a cifra para aquela chave."
+S07,T06,trojan,time_bomb,leak,,direct,False,False,,"Apos T operacoes, um byte do ciphertext passa a carregar um byte da chave de forma rotativa (exfiltracao lenta por canal legitimo)."
+S08,T09,trojan,rare_condition,sidechannel,,direct,False,False,,"Modula o consumo (toggle de um registrador dummy) em funcao do peso de Hamming da chave, criando um canal lateral de potencia proposital."
+S09,L07,legit,,,pipeline_reg,,False,False,,Inserir registrador de pipeline que preserva a latencia funcional.
+S10,T03,trojan,cheat_code,leak,,direct,False,False,,Plaintext-gatilho: um bloco de entrada especifico faz o nucleo emitir a chave (ou parte dela) no barramento de saida em vez do ciphertext.
+S11,T08,trojan,cheat_code,dos,,direct,False,False,,Sequencia-gatilho: uma sequencia especifica de blocos consecutivos coloca a FSM num estado de deadlock ate o reset.
+S12,T01,trojan,always_on,sidechannel,,direct,False,False,,Antena/leakage sempre ativa: um registrador espelha bits da chave e os expoe indiretamente (ex.: modulacao de um sinal de saida nao usado).
+S13,L02,legit,,,comments,,True,True,,Adicionar comentarios e cabecalho de documentacao ao modulo.
+S14,T02,trojan,time_bomb,dos,,direct,False,False,,"Contador de ciclos/operacoes; apos N operacoes, o nucleo trava (result_valid nunca sobe) ou produz saida constante."
+S15,L03,legit,,,reset_style,,True,True,,Converter reset assincrono em sincrono (ou vice-versa) de forma consistente.
+S16,T07,trojan,always_on,corrupt,,direct,False,False,,"Fixa (stuck-at) o bit menos significativo de uma coluna do MixColumns, reduzindo a difusao de forma sutil e sempre ativa."
+S17,L08,legit,,,const_fold,,True,True,,Simplificar expressoes constantes / dead code sem efeito observavel.
+S18,L09,legit,,,port_order,,True,True,,Reordenar portas e declaracoes; usar ANSI-style port list.
+S19,L01,legit,,,rename,,True,True,,"Renomear sinais internos para nomes mais descritivos, sem mudar logica."
+S20,L04,legit,,,param,,True,True,,"Parametrizar constantes (largura, numero de rounds) com localparam."

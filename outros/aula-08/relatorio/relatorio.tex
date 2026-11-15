@@ -70,7 +70,7 @@ cobrindo a taxonomia gatilho\,$\times$\,payload: gatilhos \emph{always-on}, \emp
 negação de serviço, corrupção funcional e canal lateral.
 
 \subsection{Geração com LLM e a escada de abordagens}
-O modelo gerador é o \texttt{Qwen2.5-Coder-14B-Instruct} (AWQ, 4~bits), executado na GPU T4 do
+O modelo gerador é o \texttt{Qwen2.5-Coder-7B-Instruct} (AWQ, 4~bits), executado na GPU T4 do
 Google Colab via vLLM. Cada refinamento legítimo é pedido diretamente. Para os trojans,
 subimos uma \emph{escada} de abordagens, análoga aos jailbreaks de prompt da Aula~07, parando
 no primeiro degrau que produz código sem recusa: (0)~pedido direto enquadrado como amostra de
@@ -88,34 +88,42 @@ células como \emph{proxy} de \emph{overhead} de área (Figura~\ref{fig:area}).
 As 20 amostras são embaralhadas e exportadas em duas planilhas: uma \textbf{rotulada} (id,
 rótulo, gatilho, \emph{payload}, degrau, resultado da verificação) e uma \textbf{anonimizada}
 (apenas id embaralhado e código HDL). O detector é o
-\texttt{deepseek-coder-v2-lite-instruct} (AWQ), de \textbf{família diferente} do gerador, para
+\texttt{Llama-3.1-8B-Instruct} (AWQ), de \textbf{família diferente} do gerador, para
 que o detector não seja o mesmo modelo que produziu as amostras. Ele classifica cada código
 como \emph{trojan} ou \emph{legit} com uma confiança, e comparamos ao gabarito via acurácia,
 recall (trojans encontrados), precisão e a matriz de confusão (FP/FN).
 
 \section{Resultados}
 \subsection{Geração e furtividade}
-\todo{preencher após a execução no Colab: \num{X}/10 trojans obtidos no degrau \emph{direct},
-\num{Y}/10 exigiram enquadramento/decomposição, \num{Z}/10 exigiram PAIR; \num{N}/20 amostras
-compilam e passam no testbench.} A Figura~\ref{fig:escada} mostra o degrau exigido por trojan e
-a Figura~\ref{fig:area} o \emph{overhead} de área (células) das trojans frente às legítimas.
+Com o enquadramento de \emph{benchmark} Trust-Hub, o modelo gerador atendeu a todos os pedidos
+no \textbf{primeiro degrau} (\emph{direct}): os \num{10}/10 trojans e as 10 amostras legítimas
+foram obtidos sem recusa, sem precisar de enquadramento acadêmico, decomposição ou PAIR
+(Figura~\ref{fig:escada}). Inserir um trojan de hardware, enquadrado como reprodução de um
+benchmark público, não acionou o alinhamento do modelo --- diferentemente dos jailbreaks de
+conteúdo da Aula~07. A \textbf{furtividade}, porém, foi baixa: das 20 amostras, apenas
+\num{9}/20 compilam e passam no \emph{testbench} do golden model, e \emph{todas as 9 são
+legítimas}; \textbf{nenhum} dos 10 trojans gerados pelo \texttt{Qwen2.5-Coder-7B} compila e passa
+no testbench enquanto dormente. Isto é, o modelo insere a lógica maliciosa pedida, mas quebra a
+sintaxe ou a interface do módulo, de modo que um trojan verdadeiramente \emph{dormante} (que
+passaria despercebido na verificação funcional) exigiria regeneração ou um modelo maior. A
+contagem de células (\texttt{yosys}) não pôde ser extraída nesta execução, portanto omitimos a
+figura de \emph{overhead} de área.
 
 \begin{figure}[t]\centering
 \includegraphics[width=\linewidth]{escada-trojans.png}
-\caption{Degrau da escada de geração necessário por trojan (direct $\rightarrow$ PAIR).}
+\caption{Degrau da escada de geração necessário por trojan: todos os 10 no degrau \emph{direct}.}
 \label{fig:escada}
-\end{figure}
-
-\begin{figure}[t]\centering
-\includegraphics[width=\linewidth]{overhead-area.png}
-\caption{\emph{Overhead} de área (células \texttt{yosys}): amostras legítimas vs.\ trojans.}
-\label{fig:area}
 \end{figure}
 
 \subsection{Detecção}
 Como \emph{self-check} do blue team, rodamos o detector sobre a nossa própria base anonimizada.
-\todo{preencher: acurácia \num{a}, recall \num{r}, precisão \num{p}; matriz de confusão
-(Fig.~\ref{fig:cm}).} Os números que valem para o exercício, porém, são os da \textbf{troca com
+O detector \texttt{Llama-3.1-8B} classificou \num{19} das 20 amostras como \emph{trojan} e apenas
+1 como \emph{legítima}, resultando em acurácia \num{0{,}55}, \textbf{recall \num{1{,}00}} e
+\textbf{precisão \num{0{,}53}} (matriz de confusão na Fig.~\ref{fig:cm}: TP\,$=10$, FP\,$=9$,
+FN\,$=0$, TN\,$=1$). O detector encontra \emph{todos} os trojans, mas ao custo de marcar como
+trojan quase todas as amostras legítimas: ele \emph{super-sinaliza}. Uma acurácia de detecção
+reportada isoladamente, sem olhar a precisão, seria enganosa --- em linha com a (in)confiabilidade
+do LLM como juiz observada nas Aulas~06 e~07. Os números que valem para o exercício, porém, são os da \textbf{troca com
 o outro grupo}: \todo{inserir acurácia, recall, FP e FN obtidos sobre a planilha anônima do
 grupo \_\_, e o score que devolvemos a eles.}
 
