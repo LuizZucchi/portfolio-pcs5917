@@ -1,0 +1,122 @@
+[
+ {
+  "id": "0",
+  "task": "legit",
+  "gold": "legit",
+  "pred": "legit"
+ },
+ {
+  "id": "1",
+  "task": "legit",
+  "gold": "legit",
+  "pred": "legit"
+ },
+ {
+  "id": "2",
+  "task": "legit",
+  "gold": "legit",
+  "pred": "legit"
+ },
+ {
+  "id": "3",
+  "task": "legit",
+  "gold": "legit",
+  "pred": "legit"
+ },
+ {
+  "id": "4",
+  "task": "legit",
+  "gold": "legit",
+  "pred": "legit"
+ },
+ {
+  "id": "5",
+  "task": "legit",
+  "gold": "legit",
+  "pred": "legit"
+ },
+ {
+  "id": "6",
+  "task": "legit",
+  "gold": "legit",
+  "pred": "legit"
+ },
+ {
+  "id": "7",
+  "task": "legit",
+  "gold": "legit",
+  "pred": "legit"
+ },
+ {
+  "id": "8",
+  "task": "legit",
+  "gold": "legit",
+  "pred": "legit"
+ },
+ {
+  "id": "9",
+  "task": "legit",
+  "gold": "legit",
+  "pred": "legit"
+ },
+ {
+  "id": "10",
+  "task": "trojan_01",
+  "gold": "trojan",
+  "pred": "legit"
+ },
+ {
+  "id": "11",
+  "task": "trojan_03",
+  "gold": "trojan",
+  "pred": "legit"
+ },
+ {
+  "id": "12",
+  "task": "trojan_04",
+  "gold": "trojan",
+  "pred": "trojan"
+ },
+ {
+  "id": "13",
+  "task": "trojan_05",
+  "gold": "trojan",
+  "pred": "trojan"
+ },
+ {
+  "id": "14",
+  "task": "trojan_06",
+  "gold": "trojan",
+  "pred": "trojan"
+ },
+ {
+  "id": "15",
+  "task": "trojan_07",
+  "gold": "trojan",
+  "pred": "legit"
+ },
+ {
+  "id": "16",
+  "task": "trojan_08",
+  "gold": "trojan",
+  "pred": "trojan"
+ },
+ {
+  "id": "17",
+  "task": "trojan_09",
+  "gold": "trojan",
+  "pred": "legit"
+ },
+ {
+  "id": "18",
+  "task": "trojan_10",
+  "gold": "trojan",
+  "pred": "trojan"
+ },
+ {
+  "id": "19",
+  "task": "trojan_11",
+  "gold": "trojan",
+  "pred": "trojan"
+ }
+]
